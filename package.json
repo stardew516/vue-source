@@ -1,0 +1,25 @@
+{
+  "name": "vue-source",
+  "version": "1.0.0",
+  "description": "source research",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stardew516/vue-source.git"
+  },
+  "keywords": [
+    "vue"
+  ],
+  "author": "lu.wei",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stardew516/vue-source/issues"
+  },
+  "homepage": "https://github.com/stardew516/vue-source#readme",
+  "dependencies": {
+    "vue": "^2.1.10"
+  }
+}
