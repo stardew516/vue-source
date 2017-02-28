@@ -1419,7 +1419,8 @@ function checkComponents (options) {
  * Ensure all props option syntax are normalized into the
  * Object-based format.
  * 确保所有的属性选项语法基于Object-based格式都是标准的
- * 作用:
+ * 作用: 把属性值转化为基于对象的驼峰式
+ * eg: 驼峰式
  */
 function normalizeProps (options) {
   var props = options.props;
@@ -1451,6 +1452,7 @@ function normalizeProps (options) {
 
 /**
  * Normalize raw function directives into object format.
+ * 作用: 将原始函数指令转换为对象格式
  */
 function normalizeDirectives (options) {
   var dirs = options.directives;
@@ -1467,6 +1469,7 @@ function normalizeDirectives (options) {
 /**
  * Merge two option objects into a new one.
  * Core utility used in both instantiation and inheritance.
+ * 作用: 将两个option对象合并成一个, 核心用于实例化和继承中.
  */
 function mergeOptions (
   parent,
@@ -1512,8 +1515,16 @@ function mergeOptions (
 
 /**
  * Resolve an asset.
+ * 解决资源问题
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 子实例需要访问祖先链中的资源
+ * 作用: 解决子实例访问祖先链中的资源的问题
+ * 参数: ?????
+ * options: 父类资源的options对象
+ * type: options的资源类型
+ * id:
+ * warnMissing:
  */
 function resolveAsset (
   options,
@@ -1527,12 +1538,14 @@ function resolveAsset (
   }
   var assets = options[type];
   // check local registration variations first
+  // 首先检查本地注册的变化
   if (hasOwn(assets, id)) { return assets[id] }
   var camelizedId = camelize(id);
   if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
   var PascalCaseId = capitalize(camelizedId);
   if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
   // fallback to prototype chain
+  // 回退到原型链
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
   if ("development" !== 'production' && warnMissing && !res) {
     warn(
@@ -1543,7 +1556,11 @@ function resolveAsset (
   return res
 }
 
-/*  */
+/**
+ *
+ *
+ *
+ * */
 
 function validateProp (
   key,
@@ -1555,6 +1572,7 @@ function validateProp (
   var absent = !hasOwn(propsData, key);
   var value = propsData[key];
   // handle boolean props
+  // 处理boolean属性
   if (isType(Boolean, prop.type)) {
     if (absent && !hasOwn(prop, 'default')) {
       value = false;
@@ -1563,10 +1581,12 @@ function validateProp (
     }
   }
   // check default value
+  // 检查默认值
   if (value === undefined) {
     value = getPropDefaultValue(vm, prop, key);
     // since the default value is a fresh copy,
     // make sure to observe it.
+    // 默认值是新的副本, 务必遵守.
     var prevShouldConvert = observerState.shouldConvert;
     observerState.shouldConvert = true;
     observe(value);
@@ -1580,14 +1600,17 @@ function validateProp (
 
 /**
  * Get the default value of a prop.
+ * 作用: 获取属性的默认值
  */
 function getPropDefaultValue (vm, prop, key) {
   // no default, return undefined
+  // 不是默认的, 返回undefined
   if (!hasOwn(prop, 'default')) {
     return undefined
   }
   var def = prop.default;
   // warn against non-factory defaults for Object & Array
+  // 警告对象和数组的非默认值
   if (isObject(def)) {
     "development" !== 'production' && warn(
       'Invalid default value for prop "' + key + '": ' +
@@ -1598,12 +1621,14 @@ function getPropDefaultValue (vm, prop, key) {
   }
   // the raw prop value was also undefined from previous render,
   // return previous default value to avoid unnecessary watcher trigger
+  // 原始属性值在未在先前的渲染中定义, 返回之前的默认值是为了避免触发不必要的观察者
   if (vm && vm.$options.propsData &&
     vm.$options.propsData[key] === undefined &&
     vm[key] !== undefined) {
     return vm[key]
   }
   // call factory function for non-Function types
+  // 为非Function类型调用工厂方法
   return typeof def === 'function' && prop.type !== Function
     ? def.call(vm)
     : def
