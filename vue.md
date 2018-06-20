@@ -7,6 +7,12 @@ hasOwn: 判断对象中是否存在某个自有属性
 isPrimitive: 判断value是不是原始值(string, number)
 cached: 
 
+是什么
+Ctor：
+baseCtor：
+ns：
+applyNS
+
 
 
 
