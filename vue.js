@@ -2558,10 +2558,13 @@
         var renderContext = parentVnode && parentVnode.context;
         vm.$slots = resolveSlots(vm.$options._renderChildren, renderContext);
         vm.$scopedSlots = {};
-        // bind the createElement fn to this instance
-        // so that we get proper render context inside it.
+        // bind the createElement fn to this instance 
+        // 把创建节点的方法绑定到实例中
+        // so that we get proper render context inside it. 
+        // 这样我们就能在其内部获取到正确的渲染
         // args order: tag, data, children, normalizationType, alwaysNormalize
-        // internal version is used by render functions compiled from templates
+        // internal version is used by render functions compiled from templates 
+        // 内部版本被用来渲染模板编译的方法
         vm._c = function(a, b, c, d) { return createElement(vm, a, b, c, d, false); };
         // normalization is always applied for the public version, used in
         // user-written render functions.
@@ -2644,6 +2647,7 @@
         Vue.prototype._i = looseIndexOf;
 
         // render static tree by index
+        // 通过索引渲染静态树 
         Vue.prototype._m = function renderStatic(
             index,
             isInFor
@@ -6302,7 +6306,7 @@
             return vnode
         }
     }
-
+    // 导出过渡数据
     function extractTransitionData(comp) {
         var data = {};
         var options = comp.$options;
@@ -6690,6 +6694,7 @@
 
     // Elements that you can, intentionally, leave open
     // (and which close themselves)
+    // 会自闭合的标签
     var canBeLeftOpenTag = makeMap(
         'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source',
         true
@@ -6697,6 +6702,7 @@
 
     // HTML5 tags https://html.spec.whatwg.org/multipage/indices.html#elements-3
     // Phrasing Content https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
+    // 非短语标签
     var isNonPhrasingTag = makeMap(
         'address,article,aside,base,blockquote,body,caption,col,colgroup,dd,' +
         'details,dialog,div,dl,dt,fieldset,figcaption,figure,footer,form,' +
@@ -7150,6 +7156,7 @@
             }
             // tag token
             var exp = parseFilters(match[1].trim());
+            // _s: toString
             tokens.push(("_s(" + exp + ")"));
             lastIndex = index + match[0].length;
         }
@@ -7199,16 +7206,18 @@
         modifiers,
         important
     ) {
-        // check capture modifier
+        // check capture modifier 捕获
         if (modifiers && modifiers.capture) {
             delete modifiers.capture;
             name = '!' + name; // mark the event as captured
         }
+        // 一次
         if (modifiers && modifiers.once) {
             delete modifiers.once;
             name = '~' + name; // mark the event as once
         }
         var events;
+        // native
         if (modifiers && modifiers.native) {
             delete modifiers.native;
             events = el.nativeEvents || (el.nativeEvents = {});
@@ -7219,6 +7228,7 @@
         var handlers = events[name];
         /* istanbul ignore if */
         if (Array.isArray(handlers)) {
+            // 很重要   前插  否则  后插
             important ? handlers.unshift(newHandler) : handlers.push(newHandler);
         } else if (handlers) {
             events[name] = important ? [newHandler, handlers] : [handlers, newHandler];
@@ -7297,7 +7307,7 @@
             /* istanbul ignore if */
             if (isStringStart(chr)) {
                 parseString(chr);
-            } else if (chr === 0x5B) {
+            } else if (chr === 0x5B) { // ascii 91 [
                 parseBracket(chr);
             }
         }
@@ -7316,6 +7326,7 @@
         return index$1 >= len
     }
 
+    // ascii 22 "  27 '
     function isStringStart(chr) {
         return chr === 0x22 || chr === 0x27
     }
@@ -7329,6 +7340,7 @@
                 parseString(chr);
                 continue
             }
+            //  ASCII 5B [ 5D ]
             if (chr === 0x5B) { inBracket++; }
             if (chr === 0x5D) { inBracket--; }
             if (inBracket === 0) {
@@ -7350,12 +7362,19 @@
 
     /*  */
 
+    // 匹配  v-   @   :
     var dirRE = /^v-|^@|^:/;
+    // 匹配  空格（in|of） 空格
     var forAliasRE = /(.*?)\s+(?:in|of)\s+(.*)/;
+    // 匹配 迭代 ( ) { } [ ]
     var forIteratorRE = /\((\{[^}]*\}|[^,]*),([^,]*)(?:,([^,]*))?\)/;
+    // 匹配  :   v-bind:
     var bindRE = /^:|^v-bind:/;
+    // 匹配 @  v-on:
     var onRE = /^@|^v-on:/;
+    // 匹配 :.
     var argRE = /:(.*)$/;
+    // 匹配 .
     var modifierRE = /\.[^.]+/g;
 
     var decodeHTMLCached = cached(decode);
@@ -7368,10 +7387,11 @@
     var preTransforms;
     var transforms;
     var postTransforms;
-    var delimiters;
+    var delimiters;  // 分隔符
 
     /**
      * Convert HTML string to AST.
+     * 抽象语法树(abstract syntax tree或者缩写为AST)
      */
     function parse(
         template,
@@ -7855,6 +7875,8 @@
         )
     }
 
+    // xml namespace 命名空间
+    // 作用是赋予命名空间一个唯一的名称。
     var ieNSBug = /^xmlns:NS\d+/;
     var ieNSPrefix = /^NS\d+:/;
 
@@ -7905,6 +7927,12 @@
      *    create fresh nodes for them on each re-render;
      * 2. Completely skip them in the patching process.
      */
+    // 优化器的目标：
+    // 遍历已经生成的模板AST树，检测纯静态的子树，例如：
+    //  永远不需要改变的DOM。
+    //  一旦我们检测到这类子树，我们可以：
+    //      1. 把它们变成常数，这样我们就不需要在任何一个需要重新渲染的节点上为它们创建新节点；
+    //      2. 在patch过程中完全跳过它们
     function optimize(root, options) {
         if (!root) { return }
         isStaticKey = genStaticKeysCached(options.staticKeys || '');
@@ -7928,6 +7956,9 @@
             // do not make component slot content static. this avoids
             // 1. components not able to mutate slot nodes
             // 2. static slot content fails for hot-reloading
+            // 不用把slot（插槽）组件内容置为静态，会导致：
+            // 1. 组件无法改变slot节点
+            // 2. 静态slot内容无法热更新
             if (!isPlatformReservedTag(node.tag) &&
                 node.tag !== 'slot' &&
                 node.attrsMap['inline-template'] == null
@@ -7952,6 +7983,8 @@
             // For a node to qualify as a static root, it should have children that
             // are not just static text. Otherwise the cost of hoisting out will
             // outweigh the benefits and it's better off to just always render it fresh.
+            // 要使一个节点有资格作为静态根，它应该包含除静态文本之外的子节点，
+            // 否则，修改成本大意义不大，并且最好是经常重新渲染。
             if (node.static && node.children.length && !(
                     node.children.length === 1 &&
                     node.children[0].type === 3
@@ -8092,11 +8125,12 @@
 
     function bind$2(el, dir) {
         el.wrapData = function(code) {
+            // _b v-bind绑定class、style等
             return ("_b(" + code + ",'" + (el.tag) + "'," + (dir.value) + (dir.modifiers && dir.modifiers.prop ? ',true' : '') + ")")
         };
     }
 
-    /*  */
+    /* 指令 */
 
     var baseDirectives = {
         bind: bind$2,
@@ -8115,11 +8149,13 @@
     var onceCount;
     var currentOptions;
 
+    // ast: abstract syntax tree 抽象语法树
     function generate(
         ast,
         options
     ) {
         // save previous staticRenderFns so generate calls can be nested
+        // 保存以前的staticRenderFns，以便生成调用可以嵌套
         var prevStaticRenderFns = staticRenderFns;
         var currentStaticRenderFns = staticRenderFns = [];
         var prevOnceCount = onceCount;
@@ -8130,9 +8166,13 @@
         dataGenFns = pluckModuleFunction(options.modules, 'genData');
         platformDirectives$1 = options.directives || {};
         isPlatformReservedTag$1 = options.isReservedTag || no;
+        // _c: 创建元素 此处为创建div
         var code = ast ? genElement(ast) : '_c("div")';
         staticRenderFns = prevStaticRenderFns;
         onceCount = prevOnceCount;
+        // with 语法
+        // var obj = {} obj.a = 'a' obj.b = 'b'
+        // with (obj) { console.log(a, b)} // 输出 a b
         return {
             render: ("with(this){return " + code + "}"),
             staticRenderFns: currentStaticRenderFns
@@ -8161,6 +8201,7 @@
                 var data = el.plain ? undefined : genData(el);
 
                 var children = el.inlineTemplate ? null : genChildren(el, true);
+                // _c: 创建元素 
                 code = "_c('" + (el.tag) + "'" + (data ? ("," + data) : '') + (children ? ("," + children) : '') + ")";
             }
             // module transforms
@@ -8172,13 +8213,17 @@
     }
 
     // hoist static sub-trees out
+    // 提升静态子树
     function genStatic(el) {
         el.staticProcessed = true;
         staticRenderFns.push(("with(this){return " + (genElement(el)) + "}"));
+        // _m: render static tree by index
+        // 通过索引渲染静态树
         return ("_m(" + (staticRenderFns.length - 1) + (el.staticInFor ? ',true' : '') + ")")
     }
 
     // v-once
+    //  v-once 指令，执行一次性地插值，当数据改变时，插值处的内容不会更新。
     function genOnce(el) {
         el.onceProcessed = true;
         if (el.if && !el.ifProcessed) {
@@ -8199,12 +8244,14 @@
                 );
                 return genElement(el)
             }
+            // _o: mark node as static (v-once)
             return ("_o(" + (genElement(el)) + "," + (onceCount++) + (key ? ("," + key) : "") + ")")
         } else {
             return genStatic(el)
         }
     }
 
+    // v-if 一次性判断
     function genIf(el) {
         el.ifProcessed = true; // avoid recursion
         return genIfConditions(el.ifConditions.slice())
@@ -8212,6 +8259,7 @@
 
     function genIfConditions(conditions) {
         if (!conditions.length) {
+            // _e: empty vnode
             return '_e()'
         }
 
@@ -8223,6 +8271,8 @@
         }
 
         // v-if with v-once should generate code like (a)?_m(0):_m(1)
+        // _m: render static tree by index
+        // 通过索引渲染静态树
         function genTernaryExp(el) {
             return el.once ? genOnce(el) : genElement(el)
         }
@@ -8234,6 +8284,8 @@
         var iterator1 = el.iterator1 ? ("," + (el.iterator1)) : '';
         var iterator2 = el.iterator2 ? ("," + (el.iterator2)) : '';
         el.forProcessed = true; // avoid recursion
+        // _l: render v-for
+        // v-for 渲染  遍历各种情况
         return "_l((" + exp + ")," +
             "function(" + alias + iterator1 + iterator2 + "){" +
             "return " + (genElement(el)) +
@@ -8322,6 +8374,8 @@
             if (gen) {
                 // compile-time directive that manipulates AST.
                 // returns true if it also needs a runtime counterpart.
+                // 操作AST的编译时指令。
+                // 如果它还需要运行时对应项，则返回true
                 needRuntime = !!gen(el, dir, warn$2);
             }
             if (needRuntime) {
@@ -8363,6 +8417,7 @@
         if (children.length) {
             var el$1 = children[0];
             // optimize single v-for
+            // 优化v-for
             if (children.length === 1 &&
                 el$1.for &&
                 el$1.tag !== 'template' &&
@@ -8380,6 +8435,10 @@
     // 0: no normalization needed
     // 1: simple normalization needed (possible 1-level deep nested array)
     // 2: full normalization needed
+    // 确定children数组所需的标准化。
+    // 0：不需要标准化
+    // 1：需要简单规标准化（或许是 1级 数组嵌套）
+    // 2：需要完全标准化
     function getNormalizationType(children) {
         var res = 0;
         for (var i = 0; i < children.length; i++) {
@@ -8417,6 +8476,7 @@
     }
 
     function genText(text) {
+        // _v: convert text to vnode 转为虚拟节点
         return ("_v(" + (text.type === 2 ?
             text.expression // no need for () because already wrapped in _s()
             :
@@ -8426,6 +8486,7 @@
     function genSlot(el) {
         var slotName = el.slotName || '"default"';
         var children = genChildren(el);
+        // _t: renderSlot slot渲染
         var res = "_t(" + slotName + (children ? ("," + children) : '');
         var attrs = el.attrs && ("{" + (el.attrs.map(function(a) { return ((camelize(a.name)) + ":" + (a.value)); }).join(',')) + "}");
         var bind$$1 = el.attrsMap['v-bind'];
@@ -8442,8 +8503,10 @@
     }
 
     // componentName is el.component, take it as argument to shun flow's pessimistic refinement
+    // componentName是el.component，将其作为顺流的悲观细化的参数（什么鬼这是😝）
     function genComponent(componentName, el) {
         var children = el.inlineTemplate ? null : genChildren(el, true);
+        // _c: 创建元素 
         return ("_c(" + componentName + "," + (genData(el)) + (children ? ("," + children) : '') + ")")
     }
 
@@ -8456,7 +8519,7 @@
         return res.slice(0, -1)
     }
 
-    // #3895, #4268
+    // #3895, #4268 换行符\u2028 \u2029
     function transformSpecialNewlines(text) {
         return text
             .replace(/\u2028/g, '\\u2028')
@@ -8467,6 +8530,7 @@
 
     /**
      * Compile a template.
+     * 编译模板
      */
     function compile$1(
         template,
@@ -8490,12 +8554,13 @@
         'super,throw,while,yield,delete,export,import,return,switch,default,' +
         'extends,finally,continue,debugger,function,arguments'
     ).split(',').join('\\b|\\b') + '\\b');
-    // check valid identifier for v-for
+    // check valid identifier for v-for 检查v-for的有效标识符
     var identRE = /[A-Za-z_$][\w$]*/;
-    // strip strings in expressions
+    // strip strings in expressions 表达式中剥离字符串
     var stripStringRE = /'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*\$\{|\}(?:[^`\\]|\\.)*`|`(?:[^`\\]|\\.)*`/g;
 
     // detect problematic expressions in a template
+    // 检测模板中有问题的表达式
     function detectErrors(ast) {
         var errors = [];
         if (ast) {
@@ -8700,6 +8765,7 @@
         var valueBinding = getBindingAttr(el, 'value') || 'null';
         var trueValueBinding = getBindingAttr(el, 'true-value') || 'true';
         var falseValueBinding = getBindingAttr(el, 'false-value') || 'false';
+        // _q: loose equal
         addProp(el, 'checked',
             "Array.isArray(" + value + ")" +
             "?_i(" + value + "," + valueBinding + ")>-1" + (
@@ -8708,6 +8774,7 @@
                 (":_q(" + value + "," + trueValueBinding + ")")
             )
         );
+        // _n: number conversion
         addHandler(el, 'click',
             "var $$a=" + value + "," +
             '$$el=$event.target,' +
@@ -8737,6 +8804,8 @@
         }
         var number = modifiers && modifiers.number;
         var valueBinding = getBindingAttr(el, 'value') || 'null';
+        // _n: number conversion
+        // _q: loose equal
         valueBinding = number ? ("_n(" + valueBinding + ")") : valueBinding;
         addProp(el, 'checked', ("_q(" + value + "," + valueBinding + ")"));
         addHandler(el, 'click', genAssignmentCode(value, valueBinding), null, true);
@@ -8794,7 +8863,7 @@
                 "File inputs are read only. Use a v-on:change listener instead."
             );
         }
-
+        // _s: toString
         addProp(el, 'value', isNative ? ("_s(" + value + ")") : ("(" + value + ")"));
         addHandler(el, event, code, null, true);
         if (trim || number || type === 'number') {
@@ -8852,6 +8921,7 @@
 
     function text(el, dir) {
         if (dir.value) {
+            // _s: toString
             addProp(el, 'textContent', ("_s(" + (dir.value) + ")"));
         }
     }
@@ -8860,6 +8930,7 @@
 
     function html(el, dir) {
         if (dir.value) {
+            // _s: toString
             addProp(el, 'innerHTML', ("_s(" + (dir.value) + ")"));
         }
     }

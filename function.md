@@ -280,118 +280,139 @@ show：{
     unbind：解绑  
 }  
 getRealChild：  
-extractTransitionData：  
+extractTransitionData：导出过渡动画数据  
 placeholder：  
-hasParentTransition：  
-isSameChild：  
-render：  
-beforeUpdate：  
-updated：  
-hasMove：  
-callPendingCbs：  
-recordPosition：  
-applyTranslation：  
+hasParentTransition：父节点是否有过渡动画  
+isSameChild：是否是同一个子节点  
+Transition： {  
+    render：渲染动画  
+}  
+TransitionGroup：{  
+    render：渲染  
+    beforeUpdate：更新前的一些操作  
+    updated：视图更新  
+    methods: {  
+        hasMove：是否需要移动  
+    }  
+}  
+  
+callPendingCbs：调用pending回调  
+recordPosition：记录元素位置  
+applyTranslation：动画  
 $mount：  
-shouldDecode：  
-decode：  
-decodeAttr：  
-parseHTML：  
-advance：  
-parseStartTag：  
-handleStartTag：  
-parseEndTag：  
-parseFilters：  
-pushFilter：  
-wrapFilter：  
-parseText：  
-baseWarn：  
-pluckModuleFunction：  
-addProp：  
-addAttr：  
-addDirective：  
-addHandler：  
-getBindingAttr：  
-getAndRemoveAttr：  
-parseModel：  
-next：  
-eof：  
-isStringStart：  
-parseBracket：  
-parseString：  
-parse：  
-processPre：  
-processRawAttrs：  
-processKey：  
-processRef：  
-processFor：  
-processIf：  
-processIfConditions：  
-findPrevElement：  
-addIfCondition：  
-processOnce：  
-processSlot：  
-processComponent：  
-processAttrs：  
-checkInFor：  
-parseModifiers：  
-makeAttrsMap：  
-isForbiddenTag：  
-guardIESVGBug：  
-checkForAliasModel：  
-optimize：  
-genStaticKeys$1：  
-markStatic：  
-markStaticRoots：  
-walkThroughConditionsBlocks：  
-isStatic：  
-isDirectChildOfTemplateFor：  
-genHandlers：  
-genHandler：  
-genKeyFilter：  
-genFilterCode：  
-bind$2：  
-generate：  
-genElement：  
-genStatic：  
-genOnce：  
-genIf：  
-genIfConditions：  
-genFor：  
-genData：  
-genDirectives：  
-genInlineTemplate：  
-genScopedSlots：  
-genScopedSlot：  
-genChildren：  
-getNormalizationType：  
-needsNormalization：  
-maybeComponent：  
-genNode：  
-genText：  
-genComponent：  
-genProps：  
-transformSpecialNewlines：  
-compile$1：  
-detectErrors：  
-checkNode：  
-checkFor：  
-checkIdentifier：  
-checkExpression：  
-transformNode：  
-genData$1：  
-transformNode$1：  
-genData$2：  
-model$1：  
-genCheckboxModel：  
-genRadioModel：  
-genDefaultModel：  
-genSelect：  
-checkOptionWarning：  
-genAssignmentCode：  
-text：  
-html：  
-compile$$1：  
-compileToFunctions：  
-makeFunction：  
-idToTemplate：  
-getOuterHTML：  
+shouldDecode：是否需要解码  
+shouldDecodeNewlines：新行解码  
+decode：解码  
+decodeAttr：解析内容  
+parseHTML：解析html  
+advance：截取部分  
+parseStartTag：解析开始标签  
+handleStartTag：处理开始标签  
+parseEndTag：解析结束标签  
+parseFilters：解析过滤器  
+pushFilter：推进过滤器  
+wrapFilter：包装过滤器  
+parseText：解析text  
+baseWarn：vue警告  
+pluckModuleFunction：module提取  
+addProp：添加属性（固有属性）  
+addAttr：添加属性（自定义属性）  
+addDirective：添加指令  
+addHandler：添加事件处理  
+getBindingAttr：获取绑定的属性  
+getAndRemoveAttr：获取或者移除属性  
+parseModel：解析model  
+next：下一个ascii码  
+eof：索引是否超出总长度  
+isStringStart：是否是以 " 或者 ' 开始  
+parseBracket：解析类（调用parseString）  
+parseString：解析string  
+parse：{ html解析为抽象语法树  
+    start: {  
+        checkRootConstraints: 是否包含el  
+    }  
+    end: {  
+  
+    }  
+    chars: {  
+          
+    }  
+}  
+processPre：是否包含v-pre  
+processRawAttrs：处理raw attrs  
+processKey：处理 key  
+processRef：处理ref  
+processFor：处理for  
+processIf：处理if（调用addIfCondition）  
+processIfConditions：处理if条件（调用addIfCondition）  
+findPrevElement：找到前一个元素  
+addIfCondition：添加if限制  
+processOnce：处理一次  
+processSlot：处理slot  
+processComponent：处理组件  
+processAttrs：处理属性attr  
+checkInFor：检验是否有for  
+parseModifiers：解析修饰符  
+makeAttrsMap：attr 转 map  
+isForbiddenTag：是否是禁止使用的标签  
+guardIESVGBug：监控ie的svg bug  
+checkForAliasModel：v-model是否使用在v-for的别名中  
+optimize：优化  
+genStaticKeys$1：获取静态树键值  
+markStatic：把节点状态置为静态  
+markStaticRoots：置为静态根目录  
+walkThroughConditionsBlocks：遍历  
+isStatic：是否是静态节点  
+isDirectChildOfTemplateFor：是否是template的直属子节点，并且有for循环  
+genHandlers：处理key（调用genHandler）  
+genHandler： 处理改变的key值 
+genKeyFilter：生成key值过滤  
+genFilterCode：过滤键值  
+bind$2：v-bind绑定class、style等  
+generate：生成render  
+genElement：生成页面元素  
+genStatic：生成静态树  
+genOnce：一次性插值  
+genIf：生成if元素  
+genIfConditions：生成if条件  
+genFor：生成for元素  
+genData：生成data  
+genDirectives：生成指令  
+genInlineTemplate：生成行内模板  
+genScopedSlots：调用genScopedSlot  
+genScopedSlot：生成slot  
+genChildren：生成子元素  
+getNormalizationType：获取标准化类型  
+needsNormalization：元素是否需要标准化  
+maybeComponent：（非保留tag标签）是否是组件  
+genNode：生成节点（包括元素和文本节点）  
+genText：生成文本节点  
+genSlot：生成插槽  
+genComponent：生成组件  
+genProps：生成属性  
+transformSpecialNewlines：换行  
+compile$1：编译模板  
+detectErrors：探测错误  
+checkNode：检查node错误  
+checkFor：检查v-for的错误  
+checkIdentifier：检查标志符  
+checkExpression：检查表达式  
+transformNode：节点转换（绑定class）  
+genData$1：生成（class）data  
+transformNode$1：节点转换（绑定style）  
+genData$2：生成(style)data  
+model$1：生成动态model（v-bind:）  
+genCheckboxModel：生成checkbox model  
+genRadioModel：生成radio model  
+genDefaultModel：生成默认的model  
+genSelect：生成select model  
+checkOptionWarning：检查option错误  
+genAssignmentCode：生成任务码  
+text：text节点  
+html：html节点  
+compile$$1：编译  
+compileToFunctions：编译function  
+makeFunction：生成一个function  
+idToTemplate：el转模板  
+$mount：渲染完成  
+getOuterHTML：获取outer html  
