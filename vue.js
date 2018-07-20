@@ -2576,6 +2576,7 @@
             return nextTick(fn, this)
         };
 
+        // 构建vnode
         Vue.prototype._render = function() {
             var vm = this;
             var ref = vm.$options;
@@ -3003,6 +3004,7 @@
             // 先走beforeMount
             callHook(vm, 'beforeMount');
             vm._watcher = new Watcher(vm, function updateComponent() {
+                // 通过render拿到了vnode，然后通过update对比vnode绘制到页面
                 vm._update(vm._render(), hydrating);
             }, noop);
             hydrating = false;
@@ -3015,7 +3017,8 @@
             }
             return vm
         };
-
+        // 对比vnode，并渲染到页面中
+        // 通过render拿到了vnode，然后通过update对比vnode绘制到页面
         Vue.prototype._update = function(vnode, hydrating) {
             var vm = this;
             // mounted完了调用beforeUpdate
@@ -3037,7 +3040,7 @@
                     vm.$options._refElm
                 );
             } else {
-                // updates
+                // updates 更新补丁，用于对比新旧2个vnode
                 vm.$el = vm.__patch__(prevVnode, vnode);
             }
             activeInstance = prevActiveInstance;
@@ -4999,7 +5002,9 @@
                 return node.nodeType === (vnode.isComment ? 8 : 3)
             }
         }
-
+        // 如果vnode不存在但是oldVnode存在，就意味着要销毁
+        // 如果oldVnode不存在但是vnode存在，说明意图是要创建新节点
+        // 当vnode和oldVnode都存在时，就需要更新
         return function patch(oldVnode, vnode, hydrating, removeOnly, parentElm, refElm) {
             if (!vnode) {
                 if (oldVnode) { invokeDestroyHook(oldVnode); }
@@ -5101,7 +5106,7 @@
             _update(oldVnode, vnode);
         }
     }
-
+    // 通过update对比vnode绘制到页面
     function _update(oldVnode, vnode) {
         var isCreate = oldVnode === emptyNode;
         var isDestroy = vnode === emptyNode;
@@ -8170,7 +8175,7 @@
         var code = ast ? genElement(ast) : '_c("div")';
         staticRenderFns = prevStaticRenderFns;
         onceCount = prevOnceCount;
-        // with 语法
+        // with 语法 超级影响性能   很慢
         // var obj = {} obj.a = 'a' obj.b = 'b'
         // with (obj) { console.log(a, b)} // 输出 a b
         return {
